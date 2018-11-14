@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="State.fs" />
+    <Compile Include="Reader.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
