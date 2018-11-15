@@ -6,34 +6,47 @@ open State
 type ReaderState<'env, 'state, 'a> =
     ReaderState of Reader<'env, State<'a, 'state>>
 
-let flip fn x = fun y -> fn y x
+let runReaderT (ReaderState r) e = runReader r e
 
-let extract (m: ReaderState<'env, 'state, 'a>) (e: 'env) (s: 'state): 'a * 'state =
-    let (ReaderState r) = m
-    runReader r e |> flip runState s
+let private mapR f r = reader {
+    let! a = r
+    return State.map f a
+}
 
-let runReaderT m e =
-    let (ReaderState r) = m
-    runReader r e
+let map f (ReaderState r) = mapR f r |> ReaderState
 
-let map (f: State<'a, 'state> -> State<'b, 'state>) (m: ReaderState<'env, 'state, 'a>) =
-    let (ReaderState r) = m
-    Reader.map f r |> ReaderState
+let bindR f r = reader {
+    let! a = r
+    return State.bind f a
+}
 
-let bind (f: 'a -> ReaderState<'env, 'state, 'b>) (m: ReaderState<'env, 'state, 'a>) =
-    let inner (env: 'env) =
-        let result = runReaderT m env
-        State (fun s ->
-            let (a, newState) = runState result s
-            extract (f a) env newState
-        )
-    Reader inner |> ReaderState
+let bind f (ReaderState r) = bindR f r |> ReaderState
 
-let apply (rF: ReaderState<'env, 'state, ('a -> 'b)>) (m: ReaderState<'env, 'state, 'a>) =
-    let (ReaderState r) = m
-    let (ReaderState fn) = rF
+let private applyR rf r = reader {
+    let! a = r
+    let! fn = rf
+    return State.apply fn a
+}
 
-    State.apply
-    |> flip Reader.map fn
-    |> flip Reader.apply r
-    |> ReaderState
+let apply (ReaderState fn) (ReaderState r) = applyR fn r |> ReaderState
+
+// Keeping this because I like it
+// Alternate apply impl
+// let flip fn x = fun y -> fn y x
+// State.apply
+// |> flip Reader.map fn
+// |> flip Reader.apply r
+// |> ReaderState
+
+let retn x = State.retn >> Reader.retn >> ReaderState <| x
+
+let liftR r = r |> ReaderState
+let liftS s = s |> Reader.retn |> ReaderState
+
+type ReaderStateBuilder() =
+    member this.Bind(m,f) = bind f m
+    member this.Return(x) = retn x
+    member this.ReturnFrom(m) = bind (State.retn) m
+    member this.Zero() = retn ()
+
+let readerState = ReaderStateBuilder()

@@ -55,8 +55,8 @@ type ReaderBuilder() =
     member x.Return(a) = retn a
     member x.ReturnFrom(m) = bind (retn) m
     member x.Zero() = zero()
-    member x.Delay(f) = delay f
-    member x.Run(f) = run f
+    //member x.Delay(f) = delay f
+    //member x.Run(f) = run f
     member x.For(m,f) = bind f m
 
 let reader = ReaderBuilder()

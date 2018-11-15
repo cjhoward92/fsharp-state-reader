@@ -3,6 +3,7 @@
 open System
 open Reader
 open State
+open Free
 
 let first num =
     Reader (fun x -> x * num)
@@ -41,6 +42,10 @@ let main argv =
 
     let (_, finalState) = runState s 40
     printfn "Final state is %i" finalState
+
+    readerState {
+        let! 
+    }
 
     Console.ReadKey() |> ignore
     0 // return an integer exit code
