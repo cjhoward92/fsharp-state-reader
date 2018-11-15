@@ -3,6 +3,8 @@
 type State<'a, 'state> =
     State of ('state -> 'a * 'state)
 
+let retn x = State (fun s -> (x, s))
+
 let runState monad state =
     let (State fn) = monad
     fn state
@@ -18,8 +20,6 @@ let map f m =
         let (result, _) = runState m state
         f result
     State inner
-
-let retn x = State (fun s -> (x, s))
 
 let apply (sFn: State<('a -> 'b), 'state>) (m: State<'a, 'state>) =
     let inner state =

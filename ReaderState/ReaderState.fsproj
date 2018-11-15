@@ -8,6 +8,7 @@
   <ItemGroup>
     <Compile Include="State.fs" />
     <Compile Include="Reader.fs" />
+    <Compile Include="Free.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
