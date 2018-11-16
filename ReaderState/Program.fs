@@ -4,6 +4,7 @@ open System
 open Reader
 open State
 open Free
+open Config
 
 let first num =
     Reader (fun x -> x * num)
@@ -26,26 +27,31 @@ let s3 str =
 
 [<EntryPoint>]
 let main argv =
-    let r = reader {
-        let! a = first 10
-        let! b = second a
-        do! third b
-    }
+    //let r = reader {
+    //    let! a = first 10
+    //    let! b = second a
+    //    do! third b
+    //}
 
-    runReader r 10
+    //runReader r 10
 
-    let s = state {
-        let! a = s1 100
-        let! b = s2 200
-        do! s3 b
-    }
+    //let s = state {
+    //    let! a = s1 100
+    //    let! b = s2 200
+    //    do! s3 b
+    //}
 
-    let (_, finalState) = runState s 40
-    printfn "Final state is %i" finalState
+    //let (_, finalState) = runState s 40
+    //printfn "Final state is %i" finalState
 
-    readerState {
-        let! 
-    }
+    let config = {
+        SourceFile = "F:\\source.csv";
+        DestFile = "F:\\dest.csv";
+        MaxLength = 10;
+        Delimiter = ',';
+        }
+    
+
 
     Console.ReadKey() |> ignore
     0 // return an integer exit code

@@ -43,6 +43,8 @@ let run comp =
     printfn "We are in the run"
     comp()
 
+let ask = Reader (fun e -> e)
+
 let traverse f list =
     let cons head tail = head :: tail
     let (<*>) = apply
